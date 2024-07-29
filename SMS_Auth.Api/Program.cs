@@ -1,30 +1,24 @@
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SMS_Auth.Application.IServices;
-using SMS_Auth.Application.Services;
+using SMS_Auth.Application;
+using SMS_Auth.Domain.Entities;
 using SMS_Auth.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<ITokenService, TokenService>();
-//configuration of mediator
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
-//configuration of auto mapper
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddSwaggerGen();
-#region DbContext Service
-builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()), ServiceLifetime.Transient);
-#endregion
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 #region Authentication & Authorization
 builder.Services.AddAuthentication(options =>
 {

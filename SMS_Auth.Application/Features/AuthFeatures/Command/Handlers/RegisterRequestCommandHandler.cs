@@ -1,9 +1,7 @@
-﻿using System.Net;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SMS_Auth.Application.Features.AuthFeatures.Command.Commands;
 using SMS_Auth.Application.IServices;
-using SMS_Auth.Domain.Entities;
 
 namespace SMS_Auth.Application.Features.AuthFeatures.Command.Handlers
 {
