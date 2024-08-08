@@ -16,6 +16,6 @@ namespace SMS_Auth.Application.Features.AuthFeatures.Command.Commands
         [Required]
         public string? Password { get; set; }
         [Required]
-        public string? Role { get; set; }
+        public Role Role { get; set; }
     }
 }

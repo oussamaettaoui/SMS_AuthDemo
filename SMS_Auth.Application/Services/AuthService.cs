@@ -57,16 +57,23 @@ namespace SMS_Auth.Application.Services
             IdentityResult result = await _userManager.CreateAsync(user, registerRequestCommand.Password);
             if (result.Succeeded)
             {
+                string? role = registerRequestCommand.Role switch
+                {
+                    Role.Director => "Director",
+                    Role.Assistant => "Assistant",
+                    Role.User => "User",
+                    _ => null
+                };
                 // check user role if exists
-                bool roleExists = await _roleManager.RoleExistsAsync(registerRequestCommand.Role.ToLower());
+                bool roleExists = await _roleManager.RoleExistsAsync(role?.ToLower());
                 // if the role does not exist, create it
                 if (!roleExists)
                 {
-                    IdentityRole userRole = new IdentityRole(registerRequestCommand.Role.ToLower());
+                    IdentityRole userRole = new IdentityRole(role.ToLower());
                     await _roleManager.CreateAsync(userRole);
                 }
                 // assign the user to the specified role
-                IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, registerRequestCommand.Role);
+                IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, role);
                 if (addToRoleResult.Succeeded)
                 {
                     return addToRoleResult;
