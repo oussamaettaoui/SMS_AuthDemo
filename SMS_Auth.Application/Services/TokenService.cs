@@ -6,6 +6,7 @@ using SMS_Auth.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SMS_Auth.Domain.Dtos;
 
 namespace SMS_Auth.Application.Services
 {
@@ -19,6 +20,7 @@ namespace SMS_Auth.Application.Services
             _jwtSetting = configuration.GetSection("Jwt").Get<JwtSetting>();
             _userManager = userManager;
         }
+
         #endregion
         #region Generate Token Method
         public async Task<string> GenerateJwtToken(User user)
@@ -45,6 +47,29 @@ namespace SMS_Auth.Application.Services
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public bool IsTokenExpired(string token)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                JwtSecurityToken? jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+                if (jwtToken is null)
+                {
+                    return true;
+                }
+                var expClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp);
+                if (expClaim is null)
+                {
+                    return true;
+                }
+                DateTimeOffset expDateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim.Value));
+                return expDateTime.UtcDateTime < DateTime.UtcNow;
+            }
+            catch (Exception ex)
+            {
+                return true;
+            }
         }
         #endregion
     }

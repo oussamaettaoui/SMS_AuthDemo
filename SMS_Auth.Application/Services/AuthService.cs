@@ -42,7 +42,7 @@ namespace SMS_Auth.Application.Services
                 {
                     User = _mapper.Map<UserDto>(user),
                     Token = token,
-                    UserRole = userRole
+                    Role = userRole
                 };
                 
                 return loginResponseDto;
