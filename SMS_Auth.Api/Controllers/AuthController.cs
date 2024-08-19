@@ -27,7 +27,7 @@ namespace SMS_Auth.Api.Controllers
         }
         #endregion
         #region Methods
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> login([FromBody] LoginRequestCommand request )
         {
             LoginResponseDto res = await _mediator.Send(request);
@@ -43,7 +43,7 @@ namespace SMS_Auth.Api.Controllers
             _response.ErrorMessages.Add("Invalid information");
             return BadRequest(_response);
         }
-        [HttpPost("/Register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> register([FromForm] RegisterRequestCommand request)
         {
             IdentityResult res = await _mediator.Send(request);
